@@ -37,8 +37,9 @@ This whole logic is executed within a lock, to make this logic thread safe.
 
 We need to put the below code in WebAPIConfig.cs
 
- var cityApiRateLimiter = new RateLimiter.RateLimiter(10000, 2);
-            var roomApiRateLimiter = new RateLimiter.RateLimiter(10000, 3);
+ 
+            var cityApiRateLimiter = new RateLimiter.RateLimiter(10000, 100);
+            var roomApiRateLimiter = new RateLimiter.RateLimiter(10000, 1000);
 
             var defaultApiRateLimiter = new RateLimiter.RateLimiter(10000, 20);
 
@@ -74,5 +75,4 @@ We need to put the below code in WebAPIConfig.cs
                 constraints: null,
                 handler: defaultApiRateLimiterHandler
             );
-      
           
