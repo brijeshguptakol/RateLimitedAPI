@@ -10,7 +10,7 @@ I am maintaining a thread safe dictionary (concurrentDictionary) with all APICal
   1. LastCallTime, 
   2. CurrentCount and 
   3. AverageTime.
-
+ 
 # Validation Algorithm
 1. Try find and entry in ApiCallHistories with current request uri as key. 
 2.  If history record exists, 
