@@ -28,8 +28,8 @@ I am maintaining a thread safe dictionary (concurrentDictionary) with all APICal
           Else
         Else
           Create a new history
-3.Set the history in ApiCallHistories   
-4.Return isAllowed.
+3. Set the history in ApiCallHistories   
+4. Return isAllowed. 
 
 This whole logic is executed within a lock, to make this logic thread safe.
         
