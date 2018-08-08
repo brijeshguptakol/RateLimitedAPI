@@ -12,8 +12,8 @@ namespace WebAPI
             // Web API routes
             config.MapHttpAttributeRoutes();
 
-            var cityApiRateLimiter = new RateLimiter.RateLimiter(10000, 2);
-            var roomApiRateLimiter = new RateLimiter.RateLimiter(10000, 3);
+            var cityApiRateLimiter = new RateLimiter.RateLimiter(10000, 100);
+            var roomApiRateLimiter = new RateLimiter.RateLimiter(10000, 1000);
 
             var defaultApiRateLimiter = new RateLimiter.RateLimiter(10000, 20);
 
