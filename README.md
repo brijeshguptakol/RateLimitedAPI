@@ -76,3 +76,15 @@ We need to put the below code in WebAPIConfig.cs
                 handler: defaultApiRateLimiterHandler
             );
           
+## Test API Rate Limiter
+1. Download the code 
+2. Open the RateLimitingAPISolution.sln using Visual studio
+3. Set WebAPI as the startup project
+4. Press Ctrl + F5 (to run without debugging)
+5. Now set the url to http://localhost:20840/api/city/Ashburn/asc
+6. Keep refreshing the page. The value entered in WebAPIConfig is to big to test it this way. So you can make changes in WebAPIConfig (\\RateLimitingAPISolution\WebAPI\App_Start\WebApiConfig.cs) and assign smaller value to maxRequestallowed - 
+
+
+            var cityApiRateLimiter = new RateLimiter.RateLimiter(10000, 2);
+            var roomApiRateLimiter = new RateLimiter.RateLimiter(10000, 3);
+7. If the number of request are more than configured, than clinet will receive a message 403 status code (too many request. Please try after some time) message.
