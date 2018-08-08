@@ -32,6 +32,47 @@ I am maintaining a thread safe dictionary (concurrentDictionary) with all APICal
 4. Return isAllowed. 
 
 This whole logic is executed within a lock, to make this logic thread safe.
-        
+
+### How to use Rate Limiter
+
+We need to put the below code in WebAPIConfig.cs
+
+ var cityApiRateLimiter = new RateLimiter.RateLimiter(10000, 2);
+            var roomApiRateLimiter = new RateLimiter.RateLimiter(10000, 3);
+
+            var defaultApiRateLimiter = new RateLimiter.RateLimiter(10000, 20);
+
+            var cityApiRateLimiterHandler =
+                new RateLimiterHandler(GlobalConfiguration.Configuration, cityApiRateLimiter);
+
+            var roomApiRateLimiterHandler =
+                new RateLimiterHandler(GlobalConfiguration.Configuration, roomApiRateLimiter);
+
+            var defaultApiRateLimiterHandler =
+                new RateLimiterHandler(GlobalConfiguration.Configuration, defaultApiRateLimiter);
+
+            config.Routes.MapHttpRoute(
+                name: "CityApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional, sortOrder = RouteParameter.Optional },
+                constraints: null,
+                handler: cityApiRateLimiterHandler
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "RoomAPI",
+                routeTemplate: "api/{controller}/{id}/{sortOrder}",
+                defaults: new { id = RouteParameter.Optional, sortOrder = RouteParameter.Optional },
+                constraints: null,
+                handler: roomApiRateLimiterHandler
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional },
+                constraints: null,
+                handler: defaultApiRateLimiterHandler
+            );
       
           
