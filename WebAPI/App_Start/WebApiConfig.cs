@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
 using WebAPI.RateLimiter;
 
 namespace WebAPI
@@ -16,17 +12,19 @@ namespace WebAPI
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            var cityApiRateLimiter = new RateLimiter.RateLimiter(10000, 2);
+            var roomApiRateLimiter = new RateLimiter.RateLimiter(10000, 3);
 
-            var apiCallHistories = new ConcurrentDictionary<string, APICallHistory>();
-
-            var cityApiRateLimiter = new RateLimiter.RateLimiter(2000, 1, apiCallHistories);
-            var roomApiRateLimiter = new RateLimiter.RateLimiter(3000, 2, apiCallHistories);
+            var defaultApiRateLimiter = new RateLimiter.RateLimiter(10000, 20);
 
             var cityApiRateLimiterHandler =
                 new RateLimiterHandler(GlobalConfiguration.Configuration, cityApiRateLimiter);
 
             var roomApiRateLimiterHandler =
                 new RateLimiterHandler(GlobalConfiguration.Configuration, roomApiRateLimiter);
+
+            var defaultApiRateLimiterHandler =
+                new RateLimiterHandler(GlobalConfiguration.Configuration, defaultApiRateLimiter);
 
             config.Routes.MapHttpRoute(
                 name: "CityApi",
@@ -47,7 +45,9 @@ namespace WebAPI
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                defaults: new { id = RouteParameter.Optional },
+                constraints: null,
+                handler: defaultApiRateLimiterHandler
             );
 
         }
