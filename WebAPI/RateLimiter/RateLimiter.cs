@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 
 namespace WebAPI.RateLimiter
@@ -8,7 +8,7 @@ namespace WebAPI.RateLimiter
 
         private static object m_lock = new object();
 
-        private ConcurrentDictionary<string, APICallHistory> ApiCallHistories { get; set; }
+        private static ConcurrentDictionary<string, APICallHistory> m_apiCallHistories;
 
         /// <summary>
         /// Minimum Average Threshold.
@@ -16,12 +16,19 @@ namespace WebAPI.RateLimiter
         private decimal m_MinimumAvgThreshold;
 
 
+        #region Constructor
+
+        static RateLimiter()
+        {
+            m_apiCallHistories = new ConcurrentDictionary<string, APICallHistory>();
+        }
+
         /// <summary>
         /// Creates an instance of RateLimiter
         /// </summary>
         /// <param name="timeInterval">time interval in millisecond. -1 signifies no restriction and 0 signifies no access</param>
         /// <param name="maxRequestAllowed">max number of request allowed per time interval. -1 signifies no restriction and 0 signifies no access</param>
-        public RateLimiter(int timeInterval, int maxRequestAllowed, ConcurrentDictionary<string, APICallHistory> apiCallHistories)
+        public RateLimiter(int timeInterval, int maxRequestAllowed)
         {
             //Lets consider 0 to be blocked and -1 to be no restriction. So, both timeInterval and maxRequestAllowed should be either equal to -1 , 0 or both are greater then 0. This is corner case scenario.
             if (timeInterval == 0)
@@ -52,9 +59,9 @@ namespace WebAPI.RateLimiter
             TimeInterval = timeInterval;
             MaxRequestAllowed = maxRequestAllowed;
             m_MinimumAvgThreshold = timeInterval / (decimal)maxRequestAllowed;
-            ApiCallHistories = apiCallHistories;
-
         }
+
+        #endregion
 
         /// <summary>
         /// Gets the time interval in millisecond
@@ -75,7 +82,7 @@ namespace WebAPI.RateLimiter
                 bool isAllowed = false;
                 APICallHistory apiCallHistory = null;
                 var newApiCallHistory = new APICallHistory();
-                var historyExists = ApiCallHistories.TryGetValue(requestUrl, out apiCallHistory);
+                var historyExists = m_apiCallHistories.TryGetValue(requestUrl, out apiCallHistory);
 
                 if (historyExists)
                 {
@@ -112,7 +119,7 @@ namespace WebAPI.RateLimiter
                 //If call is allowed, than update the history
                 if (isAllowed)
                 {
-                    ApiCallHistories[requestUrl] = newApiCallHistory;
+                    m_apiCallHistories[requestUrl] = newApiCallHistory;
                 }
 
                 return isAllowed;
